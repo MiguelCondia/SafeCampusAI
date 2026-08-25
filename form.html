@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form>
+        <h2>Reportar un incidente</h2>
+        <label for="titulo">Título del incidente</label>
+        <input type="text" id="titulo" name="titulo" placeholder="Ej. Tejado caído">
+
+        <label for="categoria">Categoría </label>
+        <select id="categoria" name="categoria">
+            <option value="seguridad">Seguridad</option>
+            <option value="infraestructura">Infraestructura</option>
+            <option value="accidente">Accidente</option>
+            <option value="otro">Otro</option>
+        </select>
+
+        <label for="ubicacion">Ubicación</label>
+        <input type="text" id="categoria" name="categoria" placeholder="Ej. Bloque A, segundo piso">
+
+        <label for="fecha">Fecha</label>
+        <input type="date" id="fecha" name="fecha">
+
+        <label for="descripcion">Descripción</label>
+        <textarea name="descripcion" id="descripcion" placeholder="Describe lo ocurrido"></textarea>
+
+        <label for="evidencia">Evidencia</label>
+        <input type="file" name="evidencia" id="evidencia">
+
+        <button type="submit">Enviar reporte</button>
+    </form>
+</body>
+</html>

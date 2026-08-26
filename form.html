@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>SafeCampus IA | Reportar incidente</title>
 </head>
 <body>
     <form>
         <h2>Reportar un incidente</h2>
         <label for="titulo">Título del incidente</label>
-        <input type="text" id="titulo" name="titulo" placeholder="Ej. Tejado caído">
+        <input type="text" id="titulo" name="titulo" placeholder="Ej. Tejado caído" required>
 
         <label for="categoria">Categoría </label>
-        <select id="categoria" name="categoria">
+        <select id="categoria" name="categoria" required>
+            <option value="" disabled selected>Seleccionar categoría</option>
             <option value="seguridad">Seguridad</option>
             <option value="infraestructura">Infraestructura</option>
             <option value="accidente">Accidente</option>
@@ -20,16 +21,16 @@
         </select>
 
         <label for="ubicacion">Ubicación</label>
-        <input type="text" id="categoria" name="categoria" placeholder="Ej. Bloque A, segundo piso">
+        <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej. Bloque A, segundo piso" required>
 
         <label for="fecha">Fecha</label>
-        <input type="date" id="fecha" name="fecha">
+        <input type="date" id="fecha" name="fecha" required>
 
         <label for="descripcion">Descripción</label>
-        <textarea name="descripcion" id="descripcion" placeholder="Describe lo ocurrido"></textarea>
+        <textarea name="descripcion" id="descripcion" placeholder="Describe lo ocurrido" minlength="20" maxlength="500" required></textarea>
 
-        <label for="evidencia">Evidencia</label>
-        <input type="file" name="evidencia" id="evidencia">
+        <label for="evidencia">Evidencia (opcional)</label>
+        <input type="file" name="evidencia" id="evidencia" accept="image/*">
 
         <button type="submit">Enviar reporte</button>
     </form>

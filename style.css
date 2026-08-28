@@ -1,6 +1,7 @@
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {
@@ -63,9 +64,8 @@ a {
 
 .card {
     padding: 10px;
-    margin: 10px;
-    width: 300px;
     background-color: #E5EEFF;
     border-radius: 12px;
     box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+    max-width: 100%;
 }

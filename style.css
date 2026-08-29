@@ -63,6 +63,8 @@ a {
 }
 
 .card {
+    width: 300px;
+    max-width: 100%;
     padding: 10px;
     background-color: #E5EEFF;
     border-radius: 12px;
@@ -71,6 +73,6 @@ a {
 
 @media (max-width: 768px) {
     .card {
-        max-width: 100%;
+        width: 100%;
     }
 }

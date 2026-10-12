@@ -1,28 +1,31 @@
-// Importamos Express: el framework que nos permite crear el servidor y las rutas de la API
 const express = require('express');
-
-// Importamos CORS: sin esto, la app móvil/web sería bloqueada por el navegador
-// al intentar llamar a nuestra API desde otro origen (otro puerto o dominio)
 const cors = require('cors');
+const db = require('./config/db'); // NUEVO: importamos la conexión a la BD
 
-// Creamos la aplicación Express. "app" es el objeto donde configuramos todo
 const app = express();
 
-// Middleware: es código que se ejecuta ANTES de llegar a cada ruta.
-// cors() permite peticiones desde otros orígenes (nuestra app Expo)
 app.use(cors());
-
-// express.json() convierte el cuerpo (body) de las peticiones de texto JSON
-// a un objeto de JavaScript, accesible como req.body
 app.use(express.json());
 
-// Ruta de prueba ("health check"): sirve para verificar que el servidor está vivo.
-// req = lo que llega del cliente, res = lo que respondemos
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', proyecto: 'SafeCampus AI' });
 });
 
-// Exportamos "app" para usarla desde server.js.
-// Separamos app de server para mantener el código modular (RNF08)
-// y poder probar la app sin necesidad de abrir un puerto
+// NUEVO: ruta que verifica que la BD responde y que los datos iniciales existen
+app.get('/api/health/db', async (req, res) => {
+    try {
+    // Contamos cuántas categorías hay; debería devolver 10
+        const resultado = await db.query('SELECT COUNT(*) FROM categoria');
+        res.json({
+            status: 'ok',
+            baseDeDatos: 'conectada',
+        categorias: Number(resultado.rows[0].count), // COUNT llega como texto, lo pasamos a número
+        });
+    } catch (error) {
+        // Si algo falla, respondemos con error 500 y mostramos el motivo en consola
+        console.error('Error de conexión a la BD:', error.message);
+        res.status(500).json({ status: 'error', baseDeDatos: 'sin conexión' });
+    }
+});
+
 module.exports = app;

@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const db = require('./config/db');
-const authRoutes = require('./routes/authRoutes'); // NUEVO: importamos las rutas de auth
+const authRoutes = require('./routes/authRoutes');
+const reporteRoutes = require('./routes/reporteRoutes');     // NUEVO
+const catalogoRoutes = require('./routes/catalogoRoutes');   // NUEVO
 
 const app = express();
 
@@ -26,8 +28,8 @@ app.get('/api/health/db', async (req, res) => {
     }
 });
 
-// NUEVO: todas las rutas de authRoutes quedan bajo el prefijo /api/auth
-// (ej: /api/auth/login, /api/auth/registro)
 app.use('/api/auth', authRoutes);
+app.use('/api/reportes', reporteRoutes);     // NUEVO
+app.use('/api/catalogos', catalogoRoutes);   // NUEVO
 
 module.exports = app;

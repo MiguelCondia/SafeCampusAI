@@ -239,7 +239,7 @@ export default function LandingScreen({ navigation }) {
                 </View>
 
                 <View style={esAncho ? { alignItems: 'flex-end' } : { marginTop: 16 }}>
-                <Text style={estilos.footerSoporte}>Soporte: soporte@safecampus.edu</Text>
+                <Text style={estilos.footerSoporte}>Soporte: miguelcondia2005@gmail.com</Text>
                 <Text style={estilos.footerCopy}>© 2026 SafeCampus IA. Todos los derechos reservados.</Text>
                 </View>
             </View>

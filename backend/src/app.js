@@ -4,11 +4,13 @@ const db = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const reporteRoutes = require('./routes/reporteRoutes');     // NUEVO
 const catalogoRoutes = require('./routes/catalogoRoutes');   // NUEVO
+const estadisticaRoutes = require('./routes/estadisticaRoutes'); 
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use('/api/estadisticas', estadisticaRoutes);  
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', proyecto: 'SafeCampus AI' });

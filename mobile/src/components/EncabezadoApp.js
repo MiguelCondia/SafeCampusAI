@@ -8,10 +8,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { colores } from '../theme';
 
-// Enlaces de navegación (solo para estudiantes). "ruta" es el nombre de la pantalla en el navegador
-const ENLACES = [
+// Cada rol ve enlaces distintos en el encabezado
+const ENLACES_ESTUDIANTE = [
     { etiqueta: 'Mi Panel', ruta: 'Panel' },
     { etiqueta: 'Mis Reportes', ruta: 'MisReportes' },
+];
+const ENLACES_ADMIN = [
+    { etiqueta: 'Dashboard', ruta: 'Panel' },
+    { etiqueta: 'Reportes', ruta: 'ReportesAdmin' },
 ];
 
 // React Navigation entrega a un encabezado personalizado estas props:
@@ -23,6 +27,7 @@ export default function EncabezadoApp({ navigation, route, back }) {
 
     const esAncho = width >= 900;
     const esAdmin = usuario.rol === 'administrador';
+    const enlaces = esAdmin ? ENLACES_ADMIN : ENLACES_ESTUDIANTE;
     const inicial = usuario.nombre.charAt(0).toUpperCase(); // letra para el avatar
 
     return (
@@ -43,17 +48,17 @@ export default function EncabezadoApp({ navigation, route, back }) {
             </View>
 
             {/* ---- Centro: enlaces (solo pantallas anchas y estudiantes) ---- */}
-            {esAncho && !esAdmin && (
-            <View style={estilos.grupo}>
-                {ENLACES.map((e) => {
-                const activo = route.name === e.ruta; // resaltamos el enlace de la pantalla actual
-                return (
-                    <TouchableOpacity key={e.ruta} onPress={() => navigation.navigate(e.ruta)}>
-                    <Text style={[estilos.enlace, activo && estilos.enlaceActivo]}>{e.etiqueta}</Text>
-                    </TouchableOpacity>
-                );
-                })}
-            </View>
+            {esAncho && (
+                <View style={estilos.grupo}>
+                    {enlaces.map((e) => {
+                    const activo = route.name === e.ruta; // resaltamos el enlace de la pantalla actual
+                    return (
+                        <TouchableOpacity key={e.ruta} onPress={() => navigation.navigate(e.ruta)}>
+                        <Text style={[estilos.enlace, activo && estilos.enlaceActivo]}>{e.etiqueta}</Text>
+                        </TouchableOpacity>
+                    );
+                    })}
+                </View>
             )}
 
             {/* ---- Derecha: crear reporte (ancho) + usuario + salir ---- */}

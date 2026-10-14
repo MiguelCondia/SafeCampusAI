@@ -16,7 +16,7 @@ const ESTADOS = {
 };
 
 // Uso:  <TarjetaReporte reporte={r} onPress={() => ...} />
-export default function TarjetaReporte({ reporte, onPress }) {
+export default function TarjetaReporte({ reporte, onPress, admin = false }) {
     // Si llega un estado desconocido, usamos "Pendiente" para que la pantalla no se rompa (RNF12)
     const info = ESTADOS[reporte.estado] || ESTADOS['Pendiente'];
 
@@ -45,15 +45,22 @@ export default function TarjetaReporte({ reporte, onPress }) {
             <Text style={estilos.ubicacion} numberOfLines={1}>{ubicacion}</Text>
         </View>
 
-        {/* Caja de estado, con el color y el mensaje de cada estado */}
-        <View style={[estilos.cajaEstado, { backgroundColor: info.fondo }]}>
+        {/* Modo administrador: autor + insignia de estado. Modo estudiante: caja explicativa */}
+        {admin ? (
+            <View style={estilos.filaAdmin}>
+            <Text style={estilos.autor} numberOfLines={1}>Reportó: {reporte.autor}</Text>
+            <Insignia tipo="estado" texto={reporte.estado} />
+            </View>
+        ) : (
+            <View style={[estilos.cajaEstado, { backgroundColor: info.fondo }]}>
             <Ionicons name={info.icono} size={22} color={info.color} />
             <View style={{ flex: 1 }}>
-            <Text style={[estilos.estadoTitulo, { color: info.color }]}>{info.titulo}</Text>
-            <Text style={estilos.estadoDetalle}>{info.detalle}</Text>
+                <Text style={[estilos.estadoTitulo, { color: info.color }]}>{info.titulo}</Text>
+                <Text style={estilos.estadoDetalle}>{info.detalle}</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={info.color} />
-        </View>
+            </View>
+        )}
         </TouchableOpacity>
     );
 }
@@ -78,4 +85,7 @@ const estilos = StyleSheet.create({
     },
     estadoTitulo: { fontWeight: '700', fontSize: 14 },
     estadoDetalle: { color: colores.textoSuave, fontSize: 12, marginTop: 1 },
+
+    filaAdmin: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 14 },
+    autor: { flex: 1, color: colores.textoSuave, fontSize: 13, marginRight: 8 },
 });

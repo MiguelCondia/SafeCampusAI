@@ -13,6 +13,7 @@ import { colores } from '../theme';
 const NAV = [
     { etiqueta: 'Dashboard', ruta: 'Panel', icono: 'home-outline' },
     { etiqueta: 'Reportes', ruta: 'ReportesAdmin', icono: 'document-text-outline' },
+    { etiqueta: 'Mapa de riesgos', ruta: 'MapaRiesgos', icono: 'map-outline' }, // NUEVO
 ];
 
 // "children" es la pantalla que se muestra a la derecha de la barra lateral

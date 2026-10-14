@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { colores } from '../theme';
 import EncabezadoApp from '../components/EncabezadoApp';
 import conLayoutAdmin from '../components/conLayoutAdmin'; // NUEVO
+import MapaRiesgosScreen from '../screens/MapaRiesgosScreen';
 
 // Pantallas públicas (sin sesión)
 import LoginScreen from '../screens/LoginScreen';
@@ -29,6 +30,7 @@ import DetalleReporteScreen from '../screens/DetalleReporteScreen';
 const PanelAdmin = conLayoutAdmin(PanelAdminScreen);
 const ReportesAdmin = conLayoutAdmin(ReportesAdminScreen);
 const DetalleAdmin = conLayoutAdmin(DetalleReporteScreen);
+const MapaRiesgos = conLayoutAdmin(MapaRiesgosScreen);
 
 const Stack = createNativeStackNavigator();
 
@@ -67,6 +69,7 @@ export default function AppNavigator() {
                 <Stack.Screen name="Panel" component={PanelAdmin} />
                 <Stack.Screen name="ReportesAdmin" component={ReportesAdmin} />
                 <Stack.Screen name="DetalleReporte" component={DetalleAdmin} />
+                <Stack.Screen name="MapaRiesgos" component={MapaRiesgos} />
             </Stack.Group>
             ) : (
             // ---- Estudiante ----

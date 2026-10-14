@@ -4,19 +4,20 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
 import { colores } from '../theme';
+import EncabezadoApp from '../components/EncabezadoApp'; // NUEVO
 
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-import HomeScreen from '../screens/HomeScreen';
+import PanelScreen from '../screens/PanelScreen';
+import NuevoReporteScreen from '../screens/NuevoReporteScreen';
+import MisReportesScreen from '../screens/MisReportesScreen';
+import DetalleReporteScreen from '../screens/DetalleReporteScreen';
 
-// Stack = pila de pantallas: navegar a una la pone encima, goBack la quita
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
     const { usuario, cargando } = useAuth();
 
-    // Mientras revisamos si hay una sesión guardada, mostramos un indicador de carga.
-    // Así evitamos que se vea el login por un instante a quien ya tenía sesión.
     if (cargando) {
         return (
         <View style={{ flex: 1, justifyContent: 'center', backgroundColor: colores.fondo }}>
@@ -27,16 +28,25 @@ export default function AppNavigator() {
 
     return (
         <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator
+            screenOptions={{
+            // NUEVO: "header" reemplaza el encabezado por defecto por nuestro componente.
+            // Recibe navigation, route y back, que le pasamos tal cual con {...props}
+            header: (props) => <EncabezadoApp {...props} />,
+            contentStyle: { backgroundColor: colores.fondo },
+            }}
+        >
             {usuario ? (
-            // Pantallas SOLO para usuarios con sesión (RNF04)
-            <Stack.Screen name="Inicio" component={HomeScreen} />
-            ) : (
-            // Pantallas públicas. Al hacer login, "usuario" deja de ser null
-            // y React cambia automáticamente al grupo de arriba.
             <>
-                <Stack.Screen name="Login" component={LoginScreen} />
-                <Stack.Screen name="Registro" component={RegisterScreen} />
+                <Stack.Screen name="Panel" component={PanelScreen} />
+                <Stack.Screen name="NuevoReporte" component={NuevoReporteScreen} />
+                <Stack.Screen name="MisReportes" component={MisReportesScreen} />
+                <Stack.Screen name="DetalleReporte" component={DetalleReporteScreen} />
+            </>
+            ) : (
+            <>
+                <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="Registro" component={RegisterScreen} options={{ headerShown: false }} />
             </>
             )}
         </Stack.Navigator>

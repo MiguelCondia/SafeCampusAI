@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 // porque para él localhost es el propio celular, no tu PC.
 // Para saberla, ejecuta "ipconfig" y copia la "Dirección IPv4" (ej: 192.168.1.15).
 // El celular y el PC deben estar en la MISMA red WiFi.
-const IP_DEL_PC = '192.168.1.XX';
+const IP_DEL_PC = '192.168.1.40';
 
 // En el navegador (web) sí podemos usar localhost.
 // En celular físico usamos la IP del PC.

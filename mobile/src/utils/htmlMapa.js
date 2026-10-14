@@ -1,9 +1,7 @@
 // Construye la página HTML que contiene el mapa Leaflet.
 // Recibe los puntos (reportes con GPS) y las zonas ya calculadas.
-export function construirHtmlMapa({ puntos, zonas }) {
-    // Pasamos los datos como JSON. Reemplazar "<" evita que un título con
-    // "</script>" rompa la página (seguridad básica contra inyección)
-    const datos = JSON.stringify({ puntos, zonas }).replace(/</g, '\\u003c');
+export function construirHtmlMapa({ puntos, zonas, demo = false }) {
+    const datos = JSON.stringify({ puntos, zonas, demo }).replace(/</g, '\\u003c')
 
     return `<!DOCTYPE html>
     <html>
@@ -46,7 +44,7 @@ export function construirHtmlMapa({ puntos, zonas }) {
         function abrirReporte(id) { enviar({ tipo: 'abrir', id: id }); }
 
         // Mapa centrado por defecto en Bogotá; luego se ajusta a los reportes
-        var mapa = L.map('mapa').setView([4.6097, -74.0817], 12);
+        var mapa = L.map('mapa', { scrollWheelZoom: !DATOS.demo }).setView([4.6097, -74.0817], 12);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap'
@@ -75,7 +73,9 @@ export function construirHtmlMapa({ puntos, zonas }) {
             '<div class="pop-titulo">' + esc(p.titulo) + '</div>' +
             '<div class="pop-suave">' + esc(p.prioridad || 'Sin clasificar') + ' · ' + esc(p.estado) +
             (p.bloque ? ' · ' + esc(p.bloque) : '') + '</div>' +
-            '<button class="pop-boton" onclick="abrirReporte(' + Number(p.id) + ')">Ver detalle</button>';
+            // El botón solo aparece si NO es el mapa de demostración
+            (DATOS.demo ? '' :
+                '<button class="pop-boton" onclick="abrirReporte(' + Number(p.id) + ')">Ver detalle</button>');
 
         L.marker([p.lat, p.lng], { icon: icono }).addTo(mapa).bindPopup(popup);
         limites.push([p.lat, p.lng]);

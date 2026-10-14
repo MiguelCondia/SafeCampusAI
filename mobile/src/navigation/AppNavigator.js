@@ -7,6 +7,7 @@ import { colores } from '../theme';
 import EncabezadoApp from '../components/EncabezadoApp';
 import conLayoutAdmin from '../components/conLayoutAdmin'; // NUEVO
 import MapaRiesgosScreen from '../screens/MapaRiesgosScreen';
+import LandingScreen from '../screens/LandingScreen';
 
 // Pantallas públicas (sin sesión)
 import LoginScreen from '../screens/LoginScreen';
@@ -59,6 +60,7 @@ export default function AppNavigator() {
             {!usuario ? (
             // ---- Sin sesión: login y registro, cada uno con su diseño ----
             <>
+                <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Registro" component={RegisterScreen} options={{ headerShown: false }} />
             </>

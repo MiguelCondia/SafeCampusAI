@@ -150,6 +150,10 @@ export default function LoginScreen({ navigation }) {
                 ¿No tienes una cuenta? <Text style={estilos.enlaceFuerte}>Regístrate</Text>
             </Text>
             </TouchableOpacity>
+            {/* Vuelve a la pantalla principal */}
+            <TouchableOpacity onPress={() => navigation.navigate('Landing')}>
+                <Text style={[estilos.enlace, { marginTop: 12 }]}>← Volver al inicio</Text>
+            </TouchableOpacity>
         </View>
         </AuthLayout>
     );

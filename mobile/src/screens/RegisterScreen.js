@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, StyleSheet,
-    ActivityIndicator, Image,
+    ActivityIndicator, Image, Platform,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
-import { colores } from '../theme';
 import AuthLayout from '../components/AuthLayout';
+import { colores } from '../theme';
 
 export default function RegisterScreen({ navigation }) {
     const { registrar } = useAuth();
@@ -15,13 +16,14 @@ export default function RegisterScreen({ navigation }) {
     const [telefono, setTelefono] = useState('');
     const [contrasena, setContrasena] = useState('');
     const [confirmar, setConfirmar] = useState('');
+    const [verContrasena, setVerContrasena] = useState(false);
     const [error, setError] = useState('');
     const [enviando, setEnviando] = useState(false);
 
     async function manejarRegistro() {
         setError('');
 
-        // Validaciones en el cliente (el backend las repite: nunca confiamos solo en el cliente)
+        // Validaciones en el cliente (el backend las repite)
         if (!nombre.trim() || !correo.trim() || !contrasena) {
         setError('Nombre, correo y contraseña son obligatorios');
         return;
@@ -38,88 +40,140 @@ export default function RegisterScreen({ navigation }) {
         setEnviando(true);
         try {
         await registrar(nombre.trim(), correo.trim(), contrasena, telefono.trim());
+        // Al cambiar "usuario" en el contexto, el navegador entra solo al panel
         } catch (e) {
-        setError(e.message); // ej: "Ya existe una cuenta con ese correo"
+        setError(e.message);
         } finally {
         setEnviando(false);
         }
     }
 
     return (
-        <AuthLayout
-        style={{ flex: 1, backgroundColor: colores.fondo }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
-        <AuthLayout contentContainerStyle={estilos.contenedor} keyboardShouldPersistTaps="handled">
-            <View style={estilos.tarjeta}>
-            <Image source={require('../../assets/logo.png')} style={{ width: 72, height: 72, alignSelf: 'center' }} resizeMode="contain" />
+        <AuthLayout>
+        <View style={estilos.tarjeta}>
+            <Image
+            source={require('../../assets/logo.png')}
+            style={estilos.logo}
+            resizeMode="contain"
+            />
             <Text style={estilos.titulo}>Crear cuenta</Text>
             <Text style={estilos.subtitulo}>Regístrate para reportar riesgos en tu campus</Text>
 
             <Text style={estilos.etiqueta}>NOMBRE COMPLETO</Text>
+            <View style={estilos.campo}>
+            <Ionicons name="person-outline" size={20} color={colores.textoSuave} />
             <TextInput style={estilos.input} value={nombre} onChangeText={setNombre} />
+            </View>
 
             <Text style={estilos.etiqueta}>CORREO INSTITUCIONAL</Text>
+            <View style={estilos.campo}>
+            <Ionicons name="mail-outline" size={20} color={colores.textoSuave} />
             <TextInput
-                style={estilos.input} value={correo} onChangeText={setCorreo}
-                autoCapitalize="none" keyboardType="email-address"
+                style={estilos.input}
+                value={correo}
+                onChangeText={setCorreo}
+                autoCapitalize="none"
+                keyboardType="email-address"
             />
+            </View>
 
             <Text style={estilos.etiqueta}>TELÉFONO (OPCIONAL)</Text>
+            <View style={estilos.campo}>
+            <Ionicons name="call-outline" size={20} color={colores.textoSuave} />
             <TextInput
-                style={estilos.input} value={telefono} onChangeText={setTelefono}
+                style={estilos.input}
+                value={telefono}
+                onChangeText={setTelefono}
                 keyboardType="phone-pad"
             />
+            </View>
 
             <Text style={estilos.etiqueta}>CONTRASEÑA</Text>
-            <TextInput style={estilos.input} value={contrasena} onChangeText={setContrasena} secureTextEntry />
+            <View style={estilos.campo}>
+            <Ionicons name="lock-closed-outline" size={20} color={colores.textoSuave} />
+            <TextInput
+                style={estilos.input}
+                value={contrasena}
+                onChangeText={setContrasena}
+                secureTextEntry={!verContrasena}
+            />
+            <TouchableOpacity onPress={() => setVerContrasena(!verContrasena)}>
+                <Ionicons
+                name={verContrasena ? 'eye-off-outline' : 'eye-outline'}
+                size={20}
+                color={colores.textoSuave}
+                />
+            </TouchableOpacity>
+            </View>
 
             <Text style={estilos.etiqueta}>CONFIRMAR CONTRASEÑA</Text>
-            <TextInput style={estilos.input} value={confirmar} onChangeText={setConfirmar} secureTextEntry />
+            <View style={estilos.campo}>
+            <Ionicons name="lock-closed-outline" size={20} color={colores.textoSuave} />
+            <TextInput
+                style={estilos.input}
+                value={confirmar}
+                onChangeText={setConfirmar}
+                secureTextEntry={!verContrasena}
+                onSubmitEditing={manejarRegistro}
+            />
+            </View>
 
             {error ? <Text style={estilos.error}>{error}</Text> : null}
 
             <TouchableOpacity style={estilos.boton} onPress={manejarRegistro} disabled={enviando}>
-                {enviando
-                ? <ActivityIndicator color={colores.blanco} />
-                : <Text style={estilos.botonTexto}>Registrarme</Text>}
+            {enviando ? (
+                <ActivityIndicator color={colores.blanco} />
+            ) : (
+                <Text style={estilos.botonTexto}>Registrarme</Text>
+            )}
             </TouchableOpacity>
 
-            {/* goBack vuelve a la pantalla anterior (Login) */}
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Text style={estilos.enlace}>
+            {/* navigate('Login') funciona aunque se haya llegado desde la landing
+                (goBack falla si no hay pantalla anterior, por ejemplo al recargar) */}
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text style={estilos.enlace}>
                 ¿Ya tienes cuenta? <Text style={estilos.enlaceFuerte}>Inicia sesión</Text>
-                </Text>
+            </Text>
             </TouchableOpacity>
-            </View>
-        </AuthLayout>
+
+            <TouchableOpacity onPress={() => navigation.navigate('Landing')}>
+            <Text style={[estilos.enlace, { marginTop: 12 }]}>← Volver al inicio</Text>
+            </TouchableOpacity>
+        </View>
         </AuthLayout>
     );
 }
 
 const estilos = StyleSheet.create({
-    contenedor: { flexGrow: 1, justifyContent: 'center', padding: 20 },
     tarjeta: {
-        backgroundColor: colores.blanco, borderRadius: 16, padding: 24,
+        backgroundColor: colores.blanco, borderRadius: 20, padding: 32,
         width: '100%', maxWidth: 420, alignSelf: 'center',
-        shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 12, elevation: 4,
+        shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 16, elevation: 4,
     },
-    titulo: { fontSize: 26, fontWeight: '800', textAlign: 'center', color: colores.texto },
-    subtitulo: { textAlign: 'center', color: colores.textoSuave, marginBottom: 20, marginTop: 4 },
-    etiqueta: { fontSize: 12, color: colores.textoSuave, marginBottom: 6, marginTop: 8 },
-    input: {
+    logo: { width: 72, height: 72, alignSelf: 'center', marginBottom: 4 },
+    titulo: { fontSize: 28, fontWeight: '800', textAlign: 'center', color: colores.texto },
+    subtitulo: { textAlign: 'center', color: colores.textoSuave, marginTop: 4, marginBottom: 20 },
+
+    etiqueta: { fontSize: 12, color: colores.textoSuave, marginBottom: 6, marginTop: 8, letterSpacing: 0.5 },
+    campo: {
+        flexDirection: 'row', alignItems: 'center',
         borderWidth: 1, borderColor: colores.borde, borderRadius: 10,
-        padding: 12, backgroundColor: colores.fondo, fontSize: 16,
+        paddingHorizontal: 12, backgroundColor: colores.fondo,
     },
+    input: {
+        flex: 1, paddingVertical: 12, paddingHorizontal: 10, fontSize: 16, color: colores.texto,
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
+    },
+
     error: {
         backgroundColor: colores.errorFondo, color: colores.error,
         padding: 10, borderRadius: 8, marginTop: 12,
     },
     boton: {
-        backgroundColor: '#000', borderRadius: 10, padding: 14,
+        backgroundColor: '#000', borderRadius: 10, padding: 15,
         alignItems: 'center', marginTop: 20,
     },
     botonTexto: { color: colores.blanco, fontWeight: '700', fontSize: 16 },
     enlace: { textAlign: 'center', marginTop: 20, color: colores.textoSuave },
-    enlaceFuerte: { color: colores.texto, fontWeight: '700' },
+    enlaceFuerte: { color: colores.texto, fontWeight: '700', textDecorationLine: 'underline' },
 });

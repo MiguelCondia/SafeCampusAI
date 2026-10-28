@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const { analizarYGuardar } = require('../services/analisisService');
 
 // Consulta base reutilizable: une el reporte con su estado, categoría y ubicación.
 // JOIN = solo filas que tienen relación; LEFT JOIN = trae el reporte aunque
@@ -109,6 +110,10 @@ async function crearReporte(req, res) {
 
         // Si llegamos aquí, todo salió bien: confirmamos los 4 cambios juntos
         await cliente.query('COMMIT');
+
+        // Análisis con IA: se ejecuta en segundo plano (sin await) para no hacer
+        // esperar al usuario. Si falla, el reporte ya está guardado.
+        analizarYGuardar(idReporte, titulo.trim(), descripcion.trim(), id_categoria);
 
         res.status(201).json({
             id_reporte: idReporte,

@@ -9,19 +9,21 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import Insignia from '../components/Insignia';
 import { fechaRelativa } from '../utils/fechas';
-import { colores } from '../theme';
+import { colores, useTema, useEstilos } from '../theme';
 
 // Los 4 niveles del "Resumen de riesgos", con los colores del mockup (RF12)
 const PRIORIDADES = [
-    { nombre: 'Crítico', etiqueta: 'Críticos', color: '#E11D48', fondo: '#FDECEF' },
+    { nombre: 'Crítico', etiqueta: 'Críticos', color: '#E11D48', fondo: colores.peligroFondo },
     { nombre: 'Alto',    etiqueta: 'Altos',    color: '#EA580C', fondo: '#FFF1E6' },
     { nombre: 'Medio',   etiqueta: 'Medios',   color: '#CA8A04', fondo: '#FEF9E1' },
     { nombre: 'Bajo',    etiqueta: 'Bajos',    color: '#0F9D6B', fondo: '#E8F8F1' },
 ];
-const COLOR_NEUTRO = { color: '#7A8299', fondo: '#ECEFF3' };
+const COLOR_NEUTRO = { color: '#7A8299', fondo: colores.neutroFondo };
 
 // Una fila de gráfico de barras: nombre, barra proporcional y cantidad
 function FilaBarra({ nombre, cantidad, maximo, color }) {
+  const { colores } = useTema();
+  const estilos = useEstilos(crearEstilos);
     // Ancho proporcional al valor más alto del grupo (si el máximo es 0, evitamos dividir entre cero)
     const ancho = maximo ? Math.round((cantidad / maximo) * 100) : 0;
     return (
@@ -37,6 +39,8 @@ function FilaBarra({ nombre, cantidad, maximo, color }) {
 
 // Tarjeta con título y varias filas de barras
 function GraficoBarras({ titulo, datos, color }) {
+  const { colores } = useTema();
+  const estilos = useEstilos(crearEstilos);
     const maximo = Math.max(0, ...datos.map((d) => d.cantidad));
     return (
         <View style={estilos.panel}>
@@ -51,12 +55,14 @@ function GraficoBarras({ titulo, datos, color }) {
 
 // Una fila compacta de la lista "Reportes recientes"
 function FilaReciente({ reporte, onPress }) {
+  const { colores } = useTema();
+  const estilos = useEstilos(crearEstilos);
     const tono = PRIORIDADES.find((p) => p.nombre === reporte.prioridad) || COLOR_NEUTRO;
     const ubicacion = [reporte.bloque, reporte.piso_area].filter(Boolean).join(' · ') || reporte.sede || 'Sin ubicación';
     return (
         <TouchableOpacity style={estilos.filaReciente} onPress={onPress}>
         {/* Cuadro de color según la prioridad del reporte */}
-        <View style={[estilos.iconoReciente, { backgroundColor: tono.fondo }]}>
+        <View style={[estilos.iconoReciente, { backgroundColor: tono.color + '26' }]}>
             <Ionicons name="alert-circle-outline" size={20} color={tono.color} />
         </View>
         <View style={{ flex: 1 }}>
@@ -70,6 +76,8 @@ function FilaReciente({ reporte, onPress }) {
 }
 
 export default function PanelAdminScreen({ navigation }) {
+  const { colores } = useTema();
+  const estilos = useEstilos(crearEstilos);
     const { usuario } = useAuth();
     const { width } = useWindowDimensions();
     // Hay barra lateral desde 900px, así que el contenido necesita más ancho para dos columnas
@@ -110,8 +118,8 @@ export default function PanelAdminScreen({ navigation }) {
     // ---- Bloque 1: las 4 tarjetas del RF11 ----
     const tarjetas = [
         { etiqueta: 'Total de reportes', valor: stats.total, color: colores.texto },
-        { etiqueta: 'Pendientes', valor: cantidad(stats.por_estado, 'Pendiente'), color: '#B26A00' },
-        { etiqueta: 'En proceso', valor: cantidad(stats.por_estado, 'En proceso'), color: '#5E35B1' },
+        { etiqueta: 'Pendientes', valor: cantidad(stats.por_estado, 'Pendiente'), color: colores.avisoTexto },
+        { etiqueta: 'En proceso', valor: cantidad(stats.por_estado, 'En proceso'), color: colores.moradoTexto },
         { etiqueta: 'Resueltos', valor: cantidad(stats.por_estado, 'Resuelto'), color: colores.verde },
     ];
     const bloqueStats = (
@@ -131,7 +139,7 @@ export default function PanelAdminScreen({ navigation }) {
         <Text style={estilos.panelTitulo}>Resumen de riesgos</Text>
         <View style={estilos.filaTiles}>
             {PRIORIDADES.map((p) => (
-            <View key={p.nombre} style={[estilos.tile, { backgroundColor: p.fondo }]}>
+            <View key={p.nombre} style={[estilos.tile, { backgroundColor: p.color + '26' }]}>
                 <Text style={[estilos.tileNumero, { color: p.color }]}>{cantidad(stats.por_prioridad, p.nombre)}</Text>
                 <Text style={estilos.tileEtiqueta}>{p.etiqueta}</Text>
             </View>
@@ -200,7 +208,7 @@ export default function PanelAdminScreen({ navigation }) {
     );
 }
 
-const estilos = StyleSheet.create({
+const crearEstilos = (colores) => StyleSheet.create({
     contenedor: { padding: 24, paddingBottom: 48, maxWidth: 1200, width: '100%', alignSelf: 'center' },
     titulo: { fontSize: 30, fontWeight: '800', color: colores.texto },
     subtitulo: { color: colores.textoSuave, marginTop: 2, marginBottom: 6 },
@@ -212,11 +220,11 @@ const estilos = StyleSheet.create({
 
     // flexWrap: en pantallas angostas las 4 tarjetas caen en 2 filas de 2
     filaStats: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 12 },
-    stat: { flexGrow: 1, flexBasis: 130, backgroundColor: colores.blanco, borderRadius: 14, padding: 14 },
+    stat: { flexGrow: 1, flexBasis: 130, backgroundColor: colores.superficie, borderRadius: 14, padding: 14 },
     statEtiqueta: { color: colores.textoSuave, fontSize: 12 },
     statNumero: { fontSize: 34, fontWeight: '800', marginTop: 4 },
 
-    panel: { backgroundColor: colores.blanco, borderRadius: 14, padding: 16, marginTop: 12 },
+    panel: { backgroundColor: colores.superficie, borderRadius: 14, padding: 16, marginTop: 12 },
     panelTitulo: { fontWeight: '800', fontSize: 16, color: colores.texto, marginBottom: 10 },
     encabezado: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     verTodos: { color: colores.primario, fontWeight: '700', fontSize: 13, marginBottom: 10 },
@@ -230,14 +238,14 @@ const estilos = StyleSheet.create({
     // Lista compacta de recientes
     filaReciente: {
         flexDirection: 'row', alignItems: 'center', gap: 10,
-        paddingVertical: 10, borderTopWidth: 1, borderTopColor: '#EEF0F6',
+        paddingVertical: 10, borderTopWidth: 1, borderTopColor: colores.separador,
     },
     iconoReciente: { width: 38, height: 38, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
     recienteTitulo: { fontWeight: '700', color: colores.texto, fontSize: 14 },
 
     filaBarra: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 5 },
     barraNombre: { width: 110, color: colores.texto, fontSize: 13 },
-    barraFondo: { flex: 1, height: 10, borderRadius: 5, backgroundColor: '#E8ECF4', overflow: 'hidden' },
+    barraFondo: { flex: 1, height: 10, borderRadius: 5, backgroundColor: colores.pista, overflow: 'hidden' },
     barraRelleno: { height: 10, borderRadius: 5 },
     barraCantidad: { width: 28, textAlign: 'right', fontWeight: '700', color: colores.texto },
 });

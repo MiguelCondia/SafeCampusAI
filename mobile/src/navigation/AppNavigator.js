@@ -1,9 +1,9 @@
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
-import { colores } from '../theme';
+import { colores, useTema, useEstilos } from '../theme';
 import EncabezadoApp from '../components/EncabezadoApp';
 import conLayoutAdmin from '../components/conLayoutAdmin'; // NUEVO
 import MapaRiesgosScreen from '../screens/MapaRiesgosScreen';
@@ -36,6 +36,7 @@ const MapaRiesgos = conLayoutAdmin(MapaRiesgosScreen);
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
+    const { colores } = useTema();
     const { usuario, cargando } = useAuth();
 
     if (cargando) {
@@ -48,8 +49,18 @@ export default function AppNavigator() {
 
     const esAdmin = usuario && usuario.rol === 'administrador';
 
+    // Le decimos a React Navigation los colores del tema actual
+    const temaNav = {
+        ...DefaultTheme,
+        colors: {
+        ...DefaultTheme.colors,
+        background: colores.fondo, card: colores.superficie, text: colores.texto,
+        border: colores.borde, primary: colores.primario,
+        },
+    };
+
     return (
-        <NavigationContainer>
+        <NavigationContainer theme={temaNav}>
         <Stack.Navigator
             screenOptions={{
             // Encabezado propio para las pantallas del estudiante

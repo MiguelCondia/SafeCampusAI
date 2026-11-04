@@ -8,9 +8,11 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import Insignia from '../components/Insignia';
 import { formatearFecha } from '../utils/fechas';
-import { colores } from '../theme';
+import { colores, useTema, useEstilos } from '../theme';
 
 export default function DetalleReporteScreen({ route }) {
+  const { colores } = useTema();
+  const estilos = useEstilos(crearEstilos);
     const { id } = route.params;
     const { usuario } = useAuth();
     const esAdmin = usuario.rol === 'administrador';
@@ -186,7 +188,7 @@ export default function DetalleReporteScreen({ route }) {
     );
 }
 
-const estilos = StyleSheet.create({
+const crearEstilos = (colores) => StyleSheet.create({
     contenedor: { padding: 20, paddingBottom: 48, maxWidth: 720, width: '100%', alignSelf: 'center' },
     codigo: { color: colores.textoSuave, fontSize: 12 },
     titulo: { fontSize: 24, fontWeight: '800', color: colores.texto, marginTop: 6 },
@@ -195,13 +197,13 @@ const estilos = StyleSheet.create({
     valor: { fontSize: 15, color: colores.texto, lineHeight: 22 },
     suave: { color: colores.textoSuave, marginTop: 2 },
     error: { backgroundColor: colores.errorFondo, color: colores.error, padding: 10, borderRadius: 8, marginTop: 10 },
-    ok: { backgroundColor: '#E3F7EE', color: '#0F7A55', padding: 10, borderRadius: 8, marginTop: 10 },
+    ok: { backgroundColor: colores.okFondo, color: colores.okTexto, padding: 10, borderRadius: 8, marginTop: 10 },
 
-    cajaIA: { backgroundColor: '#E8F0FE', borderRadius: 12, padding: 14, marginTop: 20 },
-    cajaIATitulo: { fontWeight: '800', color: '#1A4FA0', marginBottom: 6 },
+    cajaIA: { backgroundColor: colores.infoFondo, borderRadius: 12, padding: 14, marginTop: 20 },
+    cajaIATitulo: { fontWeight: '800', color: colores.infoTexto, marginBottom: 6 },
 
     panelAdmin: {
-        backgroundColor: colores.blanco, borderRadius: 14, padding: 16, marginTop: 20,
+        backgroundColor: colores.superficie, borderRadius: 14, padding: 16, marginTop: 20,
         borderWidth: 1, borderColor: colores.borde,
     },
     panelAdminTitulo: { fontSize: 17, fontWeight: '800', color: colores.texto },
@@ -218,7 +220,7 @@ const estilos = StyleSheet.create({
         backgroundColor: colores.fondo, fontSize: 15, color: colores.texto, minHeight: 60,
         ...Platform.select({ web: { outlineStyle: 'none' } }),
     },
-    botonGuardar: { backgroundColor: '#000', borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 14 },
+    botonGuardar: { backgroundColor: colores.botonNegro, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 14 },
     botonGuardarTexto: { color: colores.blanco, fontWeight: '700' },
 
     itemHistorial: { flexDirection: 'row', gap: 12 },

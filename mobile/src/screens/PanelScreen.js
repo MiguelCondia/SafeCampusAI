@@ -8,9 +8,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import TarjetaReporte from '../components/TarjetaReporte';
-import { colores } from '../theme';
+import { colores, useTema, useEstilos } from '../theme';
 
 export default function PanelScreen({ navigation }) {
+  const { colores } = useTema();
+  const estilos = useEstilos(crearEstilos);
     const { usuario } = useAuth();
     const { width } = useWindowDimensions();
     const [reportes, setReportes] = useState([]);
@@ -171,7 +173,7 @@ export default function PanelScreen({ navigation }) {
     );
 }
 
-const estilos = StyleSheet.create({
+const crearEstilos = (colores) => StyleSheet.create({
     contenedor: { padding: 20, paddingBottom: 48, maxWidth: 1100, width: '100%', alignSelf: 'center' },
     centro: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 12 },
     suave: { color: colores.textoSuave, fontSize: 13 },
@@ -193,20 +195,20 @@ const estilos = StyleSheet.create({
 
     banner: {
         flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 18,
-        backgroundColor: colores.blanco, borderRadius: 14, padding: 14,
+        backgroundColor: colores.superficie, borderRadius: 14, padding: 14,
     },
     bannerIcono: {
-        width: 42, height: 42, borderRadius: 10, backgroundColor: '#E8F0FE',
+        width: 42, height: 42, borderRadius: 10, backgroundColor: colores.infoFondo,
         alignItems: 'center', justifyContent: 'center',
     },
     bannerTitulo: { fontWeight: '700', color: colores.texto, fontSize: 15 },
 
     filaStats: { flexDirection: 'row', gap: 10, marginTop: 14 },
-    stat: { flex: 1, backgroundColor: colores.blanco, borderRadius: 14, padding: 14 },
+    stat: { flex: 1, backgroundColor: colores.superficie, borderRadius: 14, padding: 14 },
     statEtiqueta: { color: colores.textoSuave, fontSize: 12 },
     statNumero: { fontSize: 32, fontWeight: '800', color: colores.texto, marginTop: 4 },
     statPie: { color: colores.textoSuave, fontSize: 12, marginTop: 2 },
-    barraFondo: { height: 6, borderRadius: 3, backgroundColor: '#E3E7F0', marginTop: 10, overflow: 'hidden' },
+    barraFondo: { height: 6, borderRadius: 3, backgroundColor: colores.pista, marginTop: 10, overflow: 'hidden' },
     barraRelleno: { height: 6, backgroundColor: colores.verde },
 
     columnas: { marginTop: 8 },
@@ -217,7 +219,7 @@ const estilos = StyleSheet.create({
     seccion: { fontSize: 20, fontWeight: '800', color: colores.texto },
     verTodos: { color: colores.primario, fontWeight: '700' },
 
-    tarjetaContactos: { backgroundColor: colores.blanco, borderRadius: 14, padding: 16 },
+    tarjetaContactos: { backgroundColor: colores.superficie, borderRadius: 14, padding: 16 },
     filaContacto: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8 },
     contactoNombre: { color: colores.texto },
     ext: { fontWeight: '700', color: colores.texto },

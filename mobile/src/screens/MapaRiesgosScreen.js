@@ -1,23 +1,25 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  ActivityIndicator, useWindowDimensions,
+    View, Text, ScrollView, TouchableOpacity, StyleSheet,
+    ActivityIndicator, useWindowDimensions,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { api } from '../services/api';
 import MapaLeaflet from '../components/MapaLeaflet';
 import { construirHtmlMapa } from '../utils/htmlMapa';
 import { agruparZonas } from '../utils/zonas';
-import { colores } from '../theme';
+import { colores, useTema, useEstilos } from '../theme';
 
 const NIVELES = [
-    { nombre: 'Crítico', etiqueta: 'Críticos', color: '#E11D48', fondo: '#FDECEF' },
+    { nombre: 'Crítico', etiqueta: 'Críticos', color: '#E11D48', fondo: colores.peligroFondo },
     { nombre: 'Alto',    etiqueta: 'Altos',    color: '#EA580C', fondo: '#FFF1E6' },
     { nombre: 'Medio',   etiqueta: 'Medios',   color: '#CA8A04', fondo: '#FEF9E1' },
     { nombre: 'Bajo',    etiqueta: 'Bajos',    color: '#0F9D6B', fondo: '#E8F8F1' },
 ];
 
 export default function MapaRiesgosScreen({ navigation }) {
+    const { esOscuro, colores } = useTema();
+    const estilos = useEstilos(crearEstilos);
     const { width } = useWindowDimensions();
     const dosColumnas = width >= 1100; // con la barra lateral, el contenido necesita más ancho
 
@@ -58,9 +60,9 @@ export default function MapaRiesgosScreen({ navigation }) {
         sinGPS: lista.length - conGPS.length,
         zonas,
         conteo,
-        html: construirHtmlMapa({ puntos: visibles, zonas }),
+        html: construirHtmlMapa({ puntos: visibles, zonas, oscuro: esOscuro }),
         };
-    }, [reportes, filtro]);
+    }, [reportes, filtro, esOscuro]);
 
     // useCallback mantiene estable la función para no reiniciar el listener del iframe
     const abrir = useCallback((id) => navigation.navigate('DetalleReporte', { id }), [navigation]);
@@ -86,7 +88,7 @@ export default function MapaRiesgosScreen({ navigation }) {
                 return (
                 <TouchableOpacity
                     key={n.nombre}
-                    style={[estilos.tile, { backgroundColor: n.fondo }, activo && { borderColor: n.color, borderWidth: 2 }]}
+                    style={[estilos.tile, { backgroundColor: n.color + '26' }, activo && { borderColor: n.color, borderWidth: 2 }]}
                     onPress={() => setFiltro(activo ? null : n.nombre)}
                 >
                     <Text style={[estilos.tileNumero, { color: n.color }]}>{conteo[n.nombre] || 0}</Text>
@@ -147,18 +149,18 @@ export default function MapaRiesgosScreen({ navigation }) {
     );
 }
 
-const estilos = StyleSheet.create({
+const crearEstilos = (colores) => StyleSheet.create({
     contenedor: { padding: 24, paddingBottom: 48, maxWidth: 1300, width: '100%', alignSelf: 'center' },
     titulo: { fontSize: 30, fontWeight: '800', color: colores.texto },
     subtitulo: { color: colores.textoSuave, marginTop: 2, marginBottom: 14 },
     suave: { color: colores.textoSuave, fontSize: 13, marginTop: 8 },
     error: { backgroundColor: colores.errorFondo, color: colores.error, padding: 10, borderRadius: 8 },
-    aviso: { backgroundColor: '#FFF4E0', color: '#B26A00', padding: 10, borderRadius: 8, marginTop: 12, fontSize: 13 },
+    aviso: { backgroundColor: colores.avisoFondo, color: colores.avisoTexto, padding: 10, borderRadius: 8, marginTop: 12, fontSize: 13 },
 
     dosColumnas: { flexDirection: 'row', alignItems: 'flex-start', gap: 16 },
-    panelMapa: { backgroundColor: colores.blanco, borderRadius: 14, padding: 6 },
+    panelMapa: { backgroundColor: colores.superficie, borderRadius: 14, padding: 6 },
 
-    panel: { backgroundColor: colores.blanco, borderRadius: 14, padding: 16, marginTop: 12 },
+    panel: { backgroundColor: colores.superficie, borderRadius: 14, padding: 16, marginTop: 12 },
     panelTitulo: { fontWeight: '800', fontSize: 16, color: colores.texto, marginBottom: 10 },
 
     filaTiles: { flexDirection: 'row', gap: 8 },
@@ -166,7 +168,7 @@ const estilos = StyleSheet.create({
     tileNumero: { fontSize: 24, fontWeight: '800' },
     tileEtiqueta: { color: colores.textoSuave, fontSize: 12, marginTop: 2 },
 
-    filaZona: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#EEF0F6' },
+    filaZona: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, borderTopWidth: 1, borderTopColor: colores.separador },
     puntoZona: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#E11D48' },
     zonaNombre: { flex: 1, color: colores.texto, fontWeight: '600' },
     zonaCantidad: { color: colores.textoSuave, fontSize: 13 },

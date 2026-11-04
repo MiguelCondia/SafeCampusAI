@@ -6,9 +6,11 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import AuthLayout from '../components/AuthLayout';
-import { colores } from '../theme';
+import { colores, useTema, useEstilos } from '../theme';
 
 export default function RegisterScreen({ navigation }) {
+  const { colores } = useTema();
+  const estilos = useEstilos(crearEstilos);
     const { registrar } = useAuth();
 
     const [nombre, setNombre] = useState('');
@@ -144,9 +146,9 @@ export default function RegisterScreen({ navigation }) {
     );
 }
 
-const estilos = StyleSheet.create({
+const crearEstilos = (colores) => StyleSheet.create({
     tarjeta: {
-        backgroundColor: colores.blanco, borderRadius: 20, padding: 32,
+        backgroundColor: colores.superficie, borderRadius: 20, padding: 32,
         width: '100%', maxWidth: 420, alignSelf: 'center',
         shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 16, elevation: 4,
     },
@@ -170,7 +172,7 @@ const estilos = StyleSheet.create({
         padding: 10, borderRadius: 8, marginTop: 12,
     },
     boton: {
-        backgroundColor: '#000', borderRadius: 10, padding: 15,
+        backgroundColor: colores.botonNegro, borderRadius: 10, padding: 15,
         alignItems: 'center', marginTop: 20,
     },
     botonTexto: { color: colores.blanco, fontWeight: '700', fontSize: 16 },

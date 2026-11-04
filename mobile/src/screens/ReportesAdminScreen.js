@@ -3,13 +3,15 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, 
 import { useFocusEffect } from '@react-navigation/native';
 import { api } from '../services/api';
 import TarjetaReporte from '../components/TarjetaReporte';
-import { colores } from '../theme';
+import { colores, useTema, useEstilos } from '../theme';
 
 const PRIORIDADES = ['Crítico', 'Alto', 'Medio', 'Bajo'];
 const BLOQUES = ['Bloque A', 'Bloque B', 'Bloque C', 'Biblioteca Central', 'Cafetería', 'Gimnasio'];
 
 // Fila de chips reutilizable. Tocar el chip activo lo desactiva (quita el filtro)
 function FiltroChips({ titulo, opciones, valor, onCambio }) {
+  const { colores } = useTema();
+  const estilos = useEstilos(crearEstilos);
     return (
         <View style={{ marginTop: 10 }}>
         <Text style={estilos.etiqueta}>{titulo}</Text>
@@ -33,6 +35,8 @@ function FiltroChips({ titulo, opciones, valor, onCambio }) {
 }
 
 export default function ReportesAdminScreen({ navigation }) {
+  const { colores } = useTema();
+  const estilos = useEstilos(crearEstilos);
     const [reportes, setReportes] = useState([]);
     const [estados, setEstados] = useState([]);       // catálogo, para los chips de estado
     const [cargando, setCargando] = useState(true);
@@ -124,7 +128,7 @@ export default function ReportesAdminScreen({ navigation }) {
     );
 }
 
-const estilos = StyleSheet.create({
+const crearEstilos = (colores) => StyleSheet.create({
     contenedor: { padding: 20, paddingBottom: 48, maxWidth: 900, width: '100%', alignSelf: 'center' },
     titulo: { fontSize: 26, fontWeight: '800', color: colores.texto },
     etiqueta: { fontSize: 11, letterSpacing: 0.8, color: colores.textoSuave, marginBottom: 6 },
@@ -134,7 +138,7 @@ const estilos = StyleSheet.create({
 
     chip: {
         paddingHorizontal: 14, paddingVertical: 7, borderRadius: 999, marginRight: 8,
-        borderWidth: 1, borderColor: colores.borde, backgroundColor: colores.blanco,
+        borderWidth: 1, borderColor: colores.borde, backgroundColor: colores.superficie,
     },
     chipActivo: { backgroundColor: colores.oscuro, borderColor: colores.oscuro },
     chipTexto: { color: colores.texto, fontSize: 13 },

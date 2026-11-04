@@ -4,10 +4,11 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { colores } from '../theme';
+import { colores, useTema, useEstilos } from '../theme';
 import MapaLeaflet from '../components/MapaLeaflet';
 import { construirHtmlMapa } from '../utils/htmlMapa';
 import { agruparZonas } from '../utils/zonas';
+import BotonTema from '../components/BotonTema';
 
 // Pasos del flujo del sistema (tomados del diagrama de secuencia del proyecto)
 const PASOS = [
@@ -28,7 +29,7 @@ const CAPACIDADES = [
         texto: 'Visualiza sobre un mapa real los incidentes de la universidad, con marcadores por nivel de prioridad.',
     },
     {
-        icono: 'sparkles', color: '#1A4FA0', titulo: 'Clasificación con IA', pronto: true,
+        icono: 'sparkles', color: colores.infoTexto, titulo: 'Clasificación con IA', pronto: true,
         texto: 'Analiza la descripción del reporte para sugerir su categoría, severidad y prioridad de atención.',
     },
 ];
@@ -70,6 +71,8 @@ const HTML_MAPA_DEMO = construirHtmlMapa({
 const sinAccion = () => {};
 
 export default function LandingScreen({ navigation }) {
+  const { colores } = useTema();
+  const estilos = useEstilos(crearEstilos);
     const insets = useSafeAreaInsets();
     const { width } = useWindowDimensions();
     const esAncho = width >= 900;
@@ -89,24 +92,27 @@ export default function LandingScreen({ navigation }) {
         {/* ---------- Encabezado fijo (queda fuera del ScrollView) ---------- */}
         <View style={[estilos.barra, { paddingTop: insets.top + 10 }]}>
             <View style={estilos.barraFila}>
-            <TouchableOpacity style={estilos.marcaFila} onPress={() => irA('inicio')}>
-                <Image source={require('../../assets/logo.png')} style={estilos.logo} resizeMode="contain" />
-                <Text style={estilos.marca}>SafeCampus IA</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={estilos.marcaFila} onPress={() => irA('inicio')}>
+                    <Image source={require('../../assets/logo.png')} style={estilos.logo} resizeMode="contain" />
+                    <Text style={estilos.marca}>SafeCampus IA</Text>
+                </TouchableOpacity>
 
-            {/* Enlaces: solo en pantallas anchas */}
-            {esAncho && (
-                <View style={estilos.enlaces}>
-                <TouchableOpacity onPress={() => irA('inicio')}><Text style={[estilos.enlace, estilos.enlaceActivo]}>Inicio</Text></TouchableOpacity>
-                <TouchableOpacity onPress={() => irA('capacidades')}><Text style={estilos.enlace}>Capacidades</Text></TouchableOpacity>
-                <TouchableOpacity onPress={() => irA('seguridad')}><Text style={estilos.enlace}>Seguridad</Text></TouchableOpacity>
-                <TouchableOpacity onPress={() => irA('soporte')}><Text style={estilos.enlace}>Soporte</Text></TouchableOpacity>
+                {/* Enlaces: solo en pantallas anchas */}
+                {esAncho && (
+                    <View style={estilos.enlaces}>
+                    <TouchableOpacity onPress={() => irA('inicio')}><Text style={[estilos.enlace, estilos.enlaceActivo]}>Inicio</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={() => irA('capacidades')}><Text style={estilos.enlace}>Capacidades</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={() => irA('seguridad')}><Text style={estilos.enlace}>Seguridad</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={() => irA('soporte')}><Text style={estilos.enlace}>Soporte</Text></TouchableOpacity>
+                    </View>
+                )}
+
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <BotonTema />
+                    <TouchableOpacity style={estilos.botonIngresar} onPress={() => navigation.navigate('Login')}>
+                        <Text style={estilos.botonIngresarTexto}>Ingresar</Text>
+                    </TouchableOpacity>
                 </View>
-            )}
-
-            <TouchableOpacity style={estilos.botonIngresar} onPress={() => navigation.navigate('Login')}>
-                <Text style={estilos.botonIngresarTexto}>Ingresar</Text>
-            </TouchableOpacity>
             </View>
         </View>
 
@@ -249,11 +255,11 @@ export default function LandingScreen({ navigation }) {
     );
 }
 
-const estilos = StyleSheet.create({
+const crearEstilos = (colores) => StyleSheet.create({
     raiz: { flex: 1, backgroundColor: colores.fondo },
 
     // ----- Encabezado -----
-    barra: { backgroundColor: colores.blanco, paddingBottom: 10, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: colores.borde },
+    barra: { backgroundColor: colores.superficie, paddingBottom: 10, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: colores.borde },
     barraFila: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', maxWidth: 1100, width: '100%', alignSelf: 'center' },
     marcaFila: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     logo: { width: 34, height: 34 },
@@ -265,23 +271,23 @@ const estilos = StyleSheet.create({
     botonIngresarTexto: { color: colores.blanco, fontWeight: '700', fontSize: 14 },
 
     // ----- Hero -----
-    hero: { backgroundColor: '#EEF2FF', paddingVertical: 56, paddingHorizontal: 20 },
+    hero: { backgroundColor: colores.heroFondo, paddingVertical: 56, paddingHorizontal: 20 },
     heroInterior: { maxWidth: 1100, width: '100%', alignSelf: 'center' },
     etiquetaPro: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 14 },
     etiquetaProTexto: { color: colores.primario, fontWeight: '800', fontSize: 12, letterSpacing: 1 },
     heroTitulo: { fontSize: 46, lineHeight: 52, fontWeight: '800', color: colores.texto },
     heroTexto: { fontSize: 17, lineHeight: 26, color: colores.textoSuave, marginTop: 16, maxWidth: 520 },
     heroBotones: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 24 },
-    botonNegro: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#000', paddingHorizontal: 22, paddingVertical: 14, borderRadius: 10 },
+    botonNegro: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colores.botonNegro, paddingHorizontal: 22, paddingVertical: 14, borderRadius: 10 },
     botonNegroTexto: { color: colores.blanco, fontWeight: '700', fontSize: 15 },
-    botonClaro: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colores.blanco, paddingHorizontal: 22, paddingVertical: 14, borderRadius: 10, borderWidth: 1, borderColor: colores.borde },
+    botonClaro: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colores.superficie, paddingHorizontal: 22, paddingVertical: 14, borderRadius: 10, borderWidth: 1, borderColor: colores.borde },
     botonClaroTexto: { color: colores.texto, fontWeight: '600', fontSize: 15 },
 
     // Tarjeta del flujo
-    tarjetaFlujo: { backgroundColor: colores.blanco, borderRadius: 20, padding: 24, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 20, elevation: 5 },
+    tarjetaFlujo: { backgroundColor: colores.superficie, borderRadius: 20, padding: 24, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 20, elevation: 5 },
     flujoTitulo: { fontSize: 18, fontWeight: '800', color: colores.texto, marginBottom: 12 },
     paso: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 10 },
-    pasoIcono: { width: 42, height: 42, borderRadius: 12, backgroundColor: '#FDECEF', alignItems: 'center', justifyContent: 'center' },
+    pasoIcono: { width: 42, height: 42, borderRadius: 12, backgroundColor: colores.peligroFondo, alignItems: 'center', justifyContent: 'center' },
     pasoTitulo: { fontWeight: '700', color: colores.texto, fontSize: 15 },
     pasoTexto: { color: colores.textoSuave, fontSize: 13, marginTop: 1 },
 
@@ -290,13 +296,13 @@ const estilos = StyleSheet.create({
     seccionTitulo: { fontSize: 34, fontWeight: '800', textAlign: 'center', color: colores.texto },
     seccionSub: { textAlign: 'center', color: colores.textoSuave, fontSize: 16, marginTop: 8, lineHeight: 24 },
     tarjetasFila: { gap: 16, marginTop: 36 },
-    tarjetaCap: { backgroundColor: '#E6EEFF', borderRadius: 16, padding: 24 },
+    tarjetaCap: { backgroundColor: colores.tarjetaAzul, borderRadius: 16, padding: 24 },
     capIcono: { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
     capTituloFila: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginTop: 16 },
     capTitulo: { fontSize: 19, fontWeight: '800', color: colores.texto },
     capTexto: { color: colores.textoSuave, lineHeight: 22, marginTop: 8 },
-    pronto: { backgroundColor: colores.blanco, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999 },
-    prontoTexto: { fontSize: 11, fontWeight: '700', color: '#1A4FA0' },
+    pronto: { backgroundColor: colores.superficie, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999 },
+    prontoTexto: { fontSize: 11, fontWeight: '700', color: colores.infoTexto },
 
     // ----- Sección oscura -----
     oscura: { backgroundColor: '#05070D', paddingVertical: 64, paddingHorizontal: 20 },
@@ -316,7 +322,7 @@ const estilos = StyleSheet.create({
     soporteTitulo: { fontSize: 28, fontWeight: '800', color: colores.texto, textAlign: 'center' },
 
     // ----- Footer -----
-    footer: { backgroundColor: colores.blanco, borderTopWidth: 1, borderTopColor: colores.borde, paddingVertical: 28, paddingHorizontal: 20 },
+    footer: { backgroundColor: colores.superficie, borderTopWidth: 1, borderTopColor: colores.borde, paddingVertical: 28, paddingHorizontal: 20 },
     footerInterior: { maxWidth: 1100, width: '100%', alignSelf: 'center' },
     footerMarca: { flexDirection: 'row', alignItems: 'center', gap: 12 },
     logoFooter: { width: 36, height: 36 },

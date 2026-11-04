@@ -6,7 +6,7 @@ import {
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { api } from '../services/api';
-import { colores } from '../theme';
+import { colores, useTema, useEstilos } from '../theme';
 
 // Zonas del campus tomadas de tu mockup. Más adelante podrían venir del backend.
 const BLOQUES = ['Bloque A', 'Bloque B', 'Bloque C', 'Biblioteca Central', 'Cafetería', 'Gimnasio', 'Otro'];
@@ -14,6 +14,8 @@ const BLOQUES = ['Bloque A', 'Bloque B', 'Bloque C', 'Biblioteca Central', 'Cafe
 const MAX_DESCRIPCION = 500; // igual que el contador del mockup
 
 export default function NuevoReporteScreen({ navigation }) {
+  const { colores } = useTema();
+  const estilos = useEstilos(crearEstilos);
     // ---- Datos del formulario ----
     const [titulo, setTitulo] = useState('');
     const [descripcion, setDescripcion] = useState('');
@@ -208,7 +210,7 @@ export default function NuevoReporteScreen({ navigation }) {
     );
 }
 
-const estilos = StyleSheet.create({
+const crearEstilos = (colores) => StyleSheet.create({
     contenedor: { padding: 20, paddingBottom: 48, maxWidth: 720, width: '100%', alignSelf: 'center' },
     seccion: { fontSize: 18, fontWeight: '800', color: colores.texto, marginTop: 22 },
     ayuda: { color: colores.textoSuave, fontSize: 13, marginTop: 2, marginBottom: 8 },
@@ -219,7 +221,7 @@ const estilos = StyleSheet.create({
 
     input: {
         borderWidth: 1, borderColor: colores.borde, borderRadius: 10, padding: 12,
-        backgroundColor: colores.blanco, fontSize: 16, color: colores.texto,
+        backgroundColor: colores.superficie, fontSize: 16, color: colores.texto,
         ...Platform.select({ web: { outlineStyle: 'none' } }),
     },
     multilinea: { minHeight: 110 },
@@ -227,7 +229,7 @@ const estilos = StyleSheet.create({
     chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
     chip: {
         paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999,
-        borderWidth: 1, borderColor: colores.borde, backgroundColor: colores.blanco,
+        borderWidth: 1, borderColor: colores.borde, backgroundColor: colores.superficie,
     },
     chipActivo: { backgroundColor: colores.oscuro, borderColor: colores.oscuro },
     chipTexto: { color: colores.texto, fontSize: 14 },
@@ -235,7 +237,7 @@ const estilos = StyleSheet.create({
 
     botonGPS: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-        borderWidth: 1, borderColor: colores.borde, backgroundColor: colores.blanco,
+        borderWidth: 1, borderColor: colores.borde, backgroundColor: colores.superficie,
         borderRadius: 10, padding: 13, marginTop: 10,
     },
     botonGPSTexto: { color: colores.texto, fontWeight: '600' },
@@ -246,7 +248,7 @@ const estilos = StyleSheet.create({
 
     botonEnviar: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-        backgroundColor: '#000', borderRadius: 12, padding: 16, marginTop: 24,
+        backgroundColor: colores.botonNegro, borderRadius: 12, padding: 16, marginTop: 24,
     },
     botonEnviarTexto: { color: colores.blanco, fontWeight: '700', fontSize: 16 },
 });

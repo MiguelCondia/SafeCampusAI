@@ -7,9 +7,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import AuthLayout from '../components/AuthLayout';
-import { colores } from '../theme';
+import { colores, useTema, useEstilos } from '../theme';
 
 export default function LoginScreen({ navigation }) {
+  const { colores } = useTema();
+  const estilos = useEstilos(crearEstilos);
     const { login } = useAuth();
 
     const [correo, setCorreo] = useState('');
@@ -75,7 +77,7 @@ export default function LoginScreen({ navigation }) {
             <TextInput
                 style={estilos.input}
                 placeholder="usuario@universidad.edu"
-                placeholderTextColor="#9AA2B5"
+                placeholderTextColor={colores.placeholder}
                 value={correo}
                 onChangeText={setCorreo}
                 autoCapitalize="none"
@@ -95,7 +97,7 @@ export default function LoginScreen({ navigation }) {
             <TextInput
                 style={estilos.input}
                 placeholder="••••••••"
-                placeholderTextColor="#9AA2B5"
+                placeholderTextColor={colores.placeholder}
                 value={contrasena}
                 onChangeText={setContrasena}
                 secureTextEntry={!verContrasena} // si verContrasena es true, se muestra el texto
@@ -159,9 +161,9 @@ export default function LoginScreen({ navigation }) {
     );
 }
 
-const estilos = StyleSheet.create({
+const crearEstilos = (colores) => StyleSheet.create({
     tarjeta: {
-        backgroundColor: colores.blanco, borderRadius: 20, padding: 32, paddingTop: 36,
+        backgroundColor: colores.superficie, borderRadius: 20, padding: 32, paddingTop: 36,
         width: '100%', maxWidth: 420, alignSelf: 'center',
         overflow: 'hidden', // recorta la barra superior con las esquinas redondeadas
         shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 16, elevation: 4,
@@ -193,12 +195,12 @@ const estilos = StyleSheet.create({
         padding: 10, borderRadius: 8, marginTop: 12,
     },
     aviso: {
-        backgroundColor: '#E8F0FE', color: '#1A4FA0',
+        backgroundColor: colores.infoFondo, color: colores.infoTexto,
         padding: 10, borderRadius: 8, marginTop: 12,
     },
 
     boton: {
-        backgroundColor: '#000', borderRadius: 10, padding: 15,
+        backgroundColor: colores.botonNegro, borderRadius: 10, padding: 15,
         alignItems: 'center', marginTop: 20,
     },
     botonContenido: { flexDirection: 'row', alignItems: 'center', gap: 8 },

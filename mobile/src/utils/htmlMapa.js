@@ -1,6 +1,6 @@
 // Construye la página HTML que contiene el mapa Leaflet.
 // Recibe los puntos (reportes con GPS) y las zonas ya calculadas.
-export function construirHtmlMapa({ puntos, zonas, demo = false }) {
+export function construirHtmlMapa({ puntos, zonas, demo = false, oscuro = false }) {
     const datos = JSON.stringify({ puntos, zonas, demo }).replace(/</g, '\\u003c')
 
     return `<!DOCTYPE html>
@@ -16,6 +16,7 @@ export function construirHtmlMapa({ puntos, zonas, demo = false }) {
         .pop-suave { color: #5B6478; font-size: 12px; margin-bottom: 6px; }
         .pop-boton { background: #0B1530; color: #fff; border: 0; border-radius: 6px;
                     padding: 6px 10px; cursor: pointer; font-weight: 600; }
+        ${oscuro ? '.leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9); } .leaflet-container { background: #0B1120; }' : ''}
     </style>
     </head>
     <body>

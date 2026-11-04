@@ -1,34 +1,17 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-
-// Colores por cada estado (RF08). Fondo suave + texto fuerte del mismo tono.
-const COLORES_ESTADO = {
-    'Pendiente':   { fondo: '#FFF4E0', texto: '#B26A00' },
-    'En revisión': { fondo: '#E8F0FE', texto: '#1A4FA0' },
-    'En proceso':  { fondo: '#EDE7F6', texto: '#5E35B1' },
-    'Resuelto':    { fondo: '#E3F7EE', texto: '#0F7A55' },
-    'Cerrado':     { fondo: '#ECEFF3', texto: '#5B6478' },
-};
-
-// Colores por nivel de prioridad (RF12): crítico rojo, alto naranja, medio amarillo, bajo verde
-const COLORES_PRIORIDAD = {
-    'Crítico': { fondo: '#FDE8E8', texto: '#C62828' },
-    'Alto':    { fondo: '#FFEBDD', texto: '#D35400' },
-    'Medio':   { fondo: '#FFF8DB', texto: '#9A7B00' },
-    'Bajo':    { fondo: '#E3F7EE', texto: '#0F7A55' },
-};
-
-// Gris neutro para valores que aún no existen (ej: prioridad antes de que la IA clasifique)
-const NEUTRO = { fondo: '#ECEFF3', texto: '#5B6478' };
+import { useTema } from '../theme';
 
 // Uso:  <Insignia tipo="estado" texto="Pendiente" />
 //       <Insignia tipo="prioridad" texto={reporte.prioridad} />
 export default function Insignia({ tipo, texto }) {
-    const tabla = tipo === 'estado' ? COLORES_ESTADO : COLORES_PRIORIDAD;
+    const { colores } = useTema();
 
-    // Si la prioridad es null (aún sin clasificar), mostramos "Sin clasificar"
+    // Los colores de cada estado/prioridad viven en theme.js (uno por modo)
+    const tabla = tipo === 'estado' ? colores.estado : colores.prioridad;
     const etiqueta = texto || 'Sin clasificar';
-    const color = tabla[texto] || NEUTRO;
+    // Si no hay color definido (ej: prioridad null), usamos un gris neutro
+    const color = tabla[texto] || { fondo: colores.neutroFondo, texto: colores.textoSuave };
 
     return (
         <View style={[estilos.caja, { backgroundColor: color.fondo }]}>

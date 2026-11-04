@@ -4,17 +4,20 @@ import {
     Platform, useWindowDimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colores } from '../theme';
+import { colores, useTema, useEstilos } from '../theme';
+import BotonTema from './BotonTema';
 
 // Panel izquierdo oscuro del mockup. Solo se muestra en pantallas anchas.
 function PanelIzquierdo() {
+    const { colores } = useTema();
+    const estilos = useEstilos(crearEstilos);
     return (
         // LinearGradient pinta un fondo con degradado diagonal (de arriba-izquierda a abajo-derecha)
         <LinearGradient
-        colors={[colores.panelOscuro, colores.panelOscuro2]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={estilos.panel}
+            colors={[colores.panelOscuro, colores.panelOscuro2]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={estilos.panel}
         >
         {/* Bloque de texto con la barra vertical verde a la izquierda */}
         <View style={estilos.bloque}>
@@ -36,32 +39,39 @@ function PanelIzquierdo() {
 
 // "children" es lo que se coloque dentro: la tarjeta de login o de registro
 export default function AuthLayout({ children }) {
+    const { colores } = useTema();
+    const estilos = useEstilos(crearEstilos);
     // useWindowDimensions entrega el ancho actual y se actualiza si la ventana cambia
     const { width } = useWindowDimensions();
     const esAncho = width >= 900; // 900px o más: modo escritorio (dos columnas)
 
     return (
         <View style={[estilos.raiz, { flexDirection: esAncho ? 'row' : 'column' }]}>
-        {/* Solo en pantallas anchas mostramos el panel izquierdo */}
-        {esAncho && <PanelIzquierdo />}
 
-        {/* Lado derecho: aquí vive la tarjeta */}
-        <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
-            <ScrollView
-            contentContainerStyle={estilos.contenido}
-            keyboardShouldPersistTaps="handled"
+            <View style={{ position: 'absolute', top: 16, right: 16, zIndex: 10 }}>
+                <BotonTema />
+            </View>
+
+            {/* Solo en pantallas anchas mostramos el panel izquierdo */}
+            {esAncho && <PanelIzquierdo />}
+
+            {/* Lado derecho: aquí vive la tarjeta */}
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             >
-            {children}
-            </ScrollView>
-        </KeyboardAvoidingView>
+                <ScrollView
+                    contentContainerStyle={estilos.contenido}
+                    keyboardShouldPersistTaps="handled"
+                >
+                    {children}
+                </ScrollView>
+            </KeyboardAvoidingView>
         </View>
     );
 }
 
-const estilos = StyleSheet.create({
+const crearEstilos = (colores) => StyleSheet.create({
     raiz: { flex: 1, backgroundColor: colores.fondo },
     contenido: { flexGrow: 1, justifyContent: 'center', padding: 20 },
 

@@ -7,7 +7,9 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
-import { colores } from '../theme';
+import { colores, useTema, useEstilos } from '../theme';
+import BotonTema from './BotonTema';
+
 
 // Opciones del menú. Cuando hagamos el mapa (Paso 7B) solo habrá que agregar un ítem aquí
 const NAV = [
@@ -18,6 +20,8 @@ const NAV = [
 
 // "children" es la pantalla que se muestra a la derecha de la barra lateral
 export default function AdminLayout({ children }) {
+    const estilos = useEstilos(crearEstilos);
+    const { colores, esOscuro, alternar } = useTema();
     const navigation = useNavigation();
     const route = useRoute();
     const { usuario, logout } = useAuth();
@@ -46,6 +50,7 @@ export default function AdminLayout({ children }) {
                 <Image source={require('../../assets/logo.png')} style={estilos.logoChico} resizeMode="contain" />
                 <Text style={estilos.marcaMovil}>SafeCampus IA</Text>
                 <View style={{ flex: 1 }} />
+                <BotonTema color={colores.blanco} />
                 <TouchableOpacity onPress={logout}>
                 <Ionicons name="log-out-outline" size={22} color={colores.acento} />
                 </TouchableOpacity>
@@ -117,10 +122,14 @@ export default function AdminLayout({ children }) {
 
             {/* flex:1 empuja "Cerrar sesión" hasta el fondo de la barra */}
             <View style={{ flex: 1 }} />
+            <TouchableOpacity style={estilos.item} onPress={alternar}>
+                <Ionicons name={esOscuro ? 'sunny-outline' : 'moon-outline'} size={20} color="#B8C0D8" />
+                <Text style={estilos.itemTexto}>{esOscuro ? 'Modo claro' : 'Modo oscuro'}</Text>
+            </TouchableOpacity>    
             <View style={estilos.separador} />
             <TouchableOpacity style={estilos.item} onPress={logout}>
-            <Ionicons name="log-out-outline" size={20} color="#B8C0D8" />
-            <Text style={estilos.itemTexto}>Cerrar sesión</Text>
+                <Ionicons name="log-out-outline" size={20} color="#B8C0D8" />
+                <Text style={estilos.itemTexto}>Cerrar sesión</Text>
             </TouchableOpacity>
         </View>
 
@@ -129,7 +138,7 @@ export default function AdminLayout({ children }) {
     );
 }
 
-const estilos = StyleSheet.create({
+const crearEstilos = (colores) => StyleSheet.create({
     raiz: { flex: 1, backgroundColor: colores.fondo },
 
     // ----- Escritorio -----

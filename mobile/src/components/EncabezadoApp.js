@@ -6,7 +6,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
-import { colores } from '../theme';
+import { colores, useTema, useEstilos } from '../theme';
+import BotonTema from './BotonTema';
 
 // Cada rol ve enlaces distintos en el encabezado
 const ENLACES_ESTUDIANTE = [
@@ -21,6 +22,8 @@ const ENLACES_ADMIN = [
 // React Navigation entrega a un encabezado personalizado estas props:
 //   navigation: para navegar | route: la pantalla actual | back: existe si hay a dónde volver
 export default function EncabezadoApp({ navigation, route, back }) {
+    const { colores } = useTema();
+    const estilos = useEstilos(crearEstilos);
     const { usuario, logout } = useAuth();
     const insets = useSafeAreaInsets();
     const { width } = useWindowDimensions();
@@ -83,6 +86,9 @@ export default function EncabezadoApp({ navigation, route, back }) {
                 <Text style={estilos.avatarTexto}>{inicial}</Text>
             </View>
 
+            <BotonTema />
+            <TouchableOpacity onPress={logout} style={estilos.salir}></TouchableOpacity>            
+
             <TouchableOpacity onPress={logout} style={estilos.salir}>
                 <Ionicons name="log-out-outline" size={22} color={colores.primario} />
             </TouchableOpacity>
@@ -92,9 +98,9 @@ export default function EncabezadoApp({ navigation, route, back }) {
     );
 }
 
-const estilos = StyleSheet.create({
+const crearEstilos = (colores) => StyleSheet.create({
     barra: {
-        backgroundColor: colores.blanco, paddingBottom: 10, paddingHorizontal: 16,
+        backgroundColor: colores.superficie, paddingBottom: 10, paddingHorizontal: 16,
         borderBottomWidth: 1, borderBottomColor: colores.borde,
     },
     // space-between reparte izquierda / centro / derecha a lo ancho

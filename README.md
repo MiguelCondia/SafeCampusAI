@@ -6,8 +6,8 @@ Proyecto desarrollado en la **Universidad de Cundinamarca, Extensión Soacha** (
 
 > **Estado:** prototipo funcional (versión 1.0). Consulta [Estado y limitaciones](#estado-y-limitaciones).
 
-[Panel del administrador](docs/dashboard.png)
-[Mapa de riesgos](docs/mapa.png)
+![Panel del administrador](docs/dashboard.png)
+![Mapa de riesgos](docs/mapa.png)
 
 ## Tabla de contenido
 

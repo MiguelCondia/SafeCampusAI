@@ -25,6 +25,7 @@ Proyecto desarrollado en la **Universidad de Cundinamarca, Extensión Soacha** (
 - [Pruebas](#pruebas)
 - [Estado y limitaciones](#estado-y-limitaciones)
 - [Solución de problemas](#solución-de-problemas)
+- [Licencia](#licencia)
 - [Autor](#autor)
 
 ## Funcionalidades

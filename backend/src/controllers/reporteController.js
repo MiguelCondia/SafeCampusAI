@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const { analizarYGuardar } = require('../services/analisisService');
+const { firmarUrl } = require('../services/storageService');
 
 // Consulta base reutilizable: une el reporte con su estado, categoría y ubicación.
 // JOIN = solo filas que tienen relación; LEFT JOIN = trae el reporte aunque
@@ -240,10 +241,23 @@ async function obtenerReporte(req, res) {
             [id]
         );
 
+        // Evidencias: devolvemos enlaces temporales firmados (el bucket es privado)
+        const evid = await db.query(
+            `SELECT id_evidencia, url_archivo, fecha_subida
+            FROM evidencia WHERE id_reporte = $1 ORDER BY fecha_subida ASC`,
+            [id]
+        );
+        const evidencias = await Promise.all(evid.rows.map(async (e) => ({
+            id_evidencia: e.id_evidencia,
+            fecha: e.fecha_subida,
+            url: await firmarUrl(e.url_archivo),
+        })));
+
         res.json({
             ...reporte,                                  // copiamos todos los campos del reporte
             historial: historial.rows,
-            analisis: analisis.rows[0] || null,          // null si aún no hay análisis
+            analisis: analisis.rows[0] || null, 
+            evidencias,         // null si aún no hay análisis
         });
     } catch (error) {
         console.error('Error al obtener reporte:', error.message);

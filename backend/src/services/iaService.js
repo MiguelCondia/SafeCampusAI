@@ -33,7 +33,7 @@ async function clasificarConGemini(titulo, descripcion) {
 
     // AbortController: si Gemini tarda más de 10 s, cancelamos y usamos el respaldo
     const control = new AbortController();
-    const temporizador = setTimeout(() => control.abort(), 10000);
+    const temporizador = setTimeout(() => control.abort(), 60000);
 
     try {
         const respuesta = await fetch(

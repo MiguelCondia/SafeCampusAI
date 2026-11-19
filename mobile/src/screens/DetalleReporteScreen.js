@@ -9,10 +9,11 @@ import { api } from '../services/api';
 import Insignia from '../components/Insignia';
 import { formatearFecha } from '../utils/fechas';
 import { colores, useTema, useEstilos } from '../theme';
+import GaleriaEvidencias from '../components/GaleriaEvidencias';
 
 export default function DetalleReporteScreen({ route }) {
-  const { colores } = useTema();
-  const estilos = useEstilos(crearEstilos);
+    const { colores } = useTema();
+    const estilos = useEstilos(crearEstilos);
     const { id } = route.params;
     const { usuario } = useAuth();
     const esAdmin = usuario.rol === 'administrador';
@@ -26,6 +27,7 @@ export default function DetalleReporteScreen({ route }) {
     const [comentario, setComentario] = useState('');
     const [guardando, setGuardando] = useState(false);
     const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
+    const aviso = route.params?.aviso;
 
     // useCallback: la función conserva su identidad entre renders, así podemos
     // usarla como dependencia y volver a llamarla después de cambiar el estado
@@ -80,6 +82,7 @@ export default function DetalleReporteScreen({ route }) {
             Reporte #SC-{String(reporte.id_reporte).padStart(4, '0')} · {formatearFecha(reporte.fecha_reporte)}
         </Text>
         <Text style={estilos.titulo}>{reporte.titulo}</Text>
+        {aviso ? <Text style={estilos.aviso}>{aviso}</Text> : null}
 
         <View style={estilos.filaInsignias}>
             <Insignia tipo="estado" texto={reporte.estado} />
@@ -107,6 +110,7 @@ export default function DetalleReporteScreen({ route }) {
 
         <Text style={estilos.etiqueta}>DESCRIPCIÓN</Text>
         <Text style={estilos.valor}>{reporte.descripcion}</Text>
+        <GaleriaEvidencias evidencias={reporte.evidencias} />
 
         <View style={estilos.cajaIA}>
             <Text style={estilos.cajaIATitulo}>Evaluación SafeCampus IA</Text>
@@ -228,4 +232,5 @@ const crearEstilos = (colores) => StyleSheet.create({
     punto: { width: 12, height: 12, borderRadius: 6, backgroundColor: colores.primario, marginTop: 4 },
     linea: { flex: 1, width: 2, backgroundColor: colores.borde, marginTop: 2 },
     historialEstado: { fontWeight: '700', color: colores.texto },
+    aviso: { backgroundColor: colores.avisoFondo, color: colores.avisoTexto, padding: 10, borderRadius: 8, marginTop: 10 },
 });

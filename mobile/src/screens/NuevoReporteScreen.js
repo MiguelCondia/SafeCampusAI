@@ -5,17 +5,64 @@ import {
 } from 'react-native';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
-import { api } from '../services/api';
-import { colores, useTema, useEstilos } from '../theme';
+import { api, subirArchivo } from '../services/api';           // subirArchivo es nuevo
+import SelectorEvidencias from '../components/SelectorEvidencias'; // nuevo
+import { useTema, useEstilos } from '../theme';
 
-// Zonas del campus tomadas de tu mockup. Más adelante podrían venir del backend.
+// Zonas del campus tomadas del mockup. Más adelante podrían venir del backend.
 const BLOQUES = ['Bloque A', 'Bloque B', 'Bloque C', 'Biblioteca Central', 'Cafetería', 'Gimnasio', 'Otro'];
 
 const MAX_DESCRIPCION = 500; // igual que el contador del mockup
+const MAX_FOTOS = 3;
 
-export default function NuevoReporteScreen({ navigation }) {
-  const { colores } = useTema();
-  const estilos = useEstilos(crearEstilos);
+// Los estilos son una función de la paleta: así cambian al alternar el modo oscuro
+const crearEstilos = (colores) => StyleSheet.create({
+    contenedor: { padding: 20, paddingBottom: 48, maxWidth: 720, width: '100%', alignSelf: 'center' },
+    seccion: { fontSize: 18, fontWeight: '800', color: colores.texto, marginTop: 22 },
+    ayuda: { color: colores.textoSuave, fontSize: 13, marginTop: 2, marginBottom: 8 },
+
+    etiqueta: { fontSize: 12, color: colores.textoSuave, marginTop: 14, marginBottom: 6, letterSpacing: 0.5 },
+    filaEtiqueta: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
+    contador: { fontSize: 12, color: colores.textoSuave, marginTop: 14, marginBottom: 6 },
+
+    input: {
+        borderWidth: 1, borderColor: colores.borde, borderRadius: 10, padding: 12,
+        backgroundColor: colores.superficie, fontSize: 16, color: colores.texto,
+        ...Platform.select({ web: { outlineStyle: 'none' } }),
+    },
+    multilinea: { minHeight: 110 },
+
+    chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
+    chip: {
+        paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999,
+        borderWidth: 1, borderColor: colores.borde, backgroundColor: colores.superficie,
+    },
+    chipActivo: { backgroundColor: colores.oscuro, borderColor: colores.oscuro },
+    chipTexto: { color: colores.texto, fontSize: 14 },
+    chipTextoActivo: { color: colores.blanco, fontWeight: '700' },
+
+    botonGPS: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+        borderWidth: 1, borderColor: colores.borde, backgroundColor: colores.superficie,
+        borderRadius: 10, padding: 13, marginTop: 10,
+    },
+    botonGPSTexto: { color: colores.texto, fontWeight: '600' },
+    gpsOk: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 },
+    gpsOkTexto: { color: colores.verde, fontSize: 13 },
+
+    error: { backgroundColor: colores.errorFondo, color: colores.error, padding: 10, borderRadius: 8, marginTop: 16 },
+
+    botonEnviar: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+        backgroundColor: colores.botonNegro, borderRadius: 12, padding: 16, marginTop: 24,
+    },
+    botonEnviarTexto: { color: colores.blanco, fontWeight: '700', fontSize: 16 },
+    });
+
+    export default function NuevoReporteScreen({ navigation }) {
+    const { colores } = useTema();
+    const estilos = useEstilos(crearEstilos);
+
     // ---- Datos del formulario ----
     const [titulo, setTitulo] = useState('');
     const [descripcion, setDescripcion] = useState('');
@@ -24,6 +71,7 @@ export default function NuevoReporteScreen({ navigation }) {
     const [sede, setSede] = useState('');
     const [pisoArea, setPisoArea] = useState('');
     const [coords, setCoords] = useState(null); // { lat, lng } cuando se obtuvo el GPS
+    const [fotos, setFotos] = useState([]);     // NUEVO: [{ uri, nombre, tipo }]
 
     // ---- Estado de la pantalla ----
     const [categorias, setCategorias] = useState([]);
@@ -31,7 +79,7 @@ export default function NuevoReporteScreen({ navigation }) {
     const [enviando, setEnviando] = useState(false);
     const [error, setError] = useState('');
 
-    // Al abrir el formulario, pedimos las categorías al backend (ruta /catalogos del Paso 4)
+    // Al abrir el formulario, pedimos las categorías al backend (ruta /catalogos)
     useEffect(() => {
         api('/catalogos')
         .then((datos) => setCategorias(datos.categorias))
@@ -85,9 +133,21 @@ export default function NuevoReporteScreen({ navigation }) {
             piso_area: pisoArea.trim() || undefined,
             },
         });
+
+        // NUEVO: subimos las fotos una por una. El reporte ya está guardado: si alguna
+        // falla no se pierde el reporte; solo se avisa en la pantalla de detalle.
+        let fallidas = 0;
+        for (const foto of fotos) {
+            try { await subirArchivo(`/reportes/${respuesta.id_reporte}/evidencias`, foto); }
+            catch (e) { fallidas++; }
+        }
+
         // replace en vez de navigate: así, al darle "atrás" desde el detalle,
         // no vuelve a un formulario ya enviado
-        navigation.replace('DetalleReporte', { id: respuesta.id_reporte });
+        navigation.replace('DetalleReporte', {
+            id: respuesta.id_reporte,
+            aviso: fallidas ? `El reporte se creó, pero ${fallidas} foto(s) no se pudieron subir.` : '',
+        });
         } catch (e) {
         setError(e.message);
         } finally {
@@ -122,6 +182,7 @@ export default function NuevoReporteScreen({ navigation }) {
         <TextInput
             style={estilos.input}
             placeholder="Ej: Cableado expuesto en corredor B"
+            placeholderTextColor={colores.placeholder}
             value={titulo}
             onChangeText={setTitulo}
             maxLength={100} // el backend rechaza títulos de más de 100 caracteres
@@ -134,6 +195,7 @@ export default function NuevoReporteScreen({ navigation }) {
         <TextInput
             style={[estilos.input, estilos.multilinea]}
             placeholder="Describe lo que observas: qué es, qué tan grave parece, si hay personas en peligro..."
+            placeholderTextColor={colores.placeholder}
             value={descripcion}
             onChangeText={setDescripcion}
             maxLength={MAX_DESCRIPCION}
@@ -184,15 +246,27 @@ export default function NuevoReporteScreen({ navigation }) {
         </View>
 
         <Text style={estilos.etiqueta}>SEDE (OPCIONAL)</Text>
-        <TextInput style={estilos.input} placeholder="Ej: Sede Principal" value={sede} onChangeText={setSede} />
+        <TextInput
+            style={estilos.input}
+            placeholder="Ej: Sede Principal"
+            placeholderTextColor={colores.placeholder}
+            value={sede}
+            onChangeText={setSede}
+        />
 
         <Text style={estilos.etiqueta}>PISO, AULA O PUNTO EXACTO</Text>
         <TextInput
             style={estilos.input}
             placeholder="Ej: Piso 2, frente al Laboratorio de Física"
+            placeholderTextColor={colores.placeholder}
             value={pisoArea}
             onChangeText={setPisoArea}
         />
+
+        {/* ---- 4. Evidencia fotográfica (NUEVO) ---- */}
+        <Text style={estilos.seccion}>4. Evidencia fotográfica</Text>
+        <Text style={estilos.ayuda}>Opcional: hasta {MAX_FOTOS} fotos. Se eliminan los datos de ubicación de la imagen.</Text>
+        <SelectorEvidencias archivos={fotos} onChange={setFotos} max={MAX_FOTOS} />
 
         {error ? <Text style={estilos.error}>{error}</Text> : null}
 
@@ -209,46 +283,3 @@ export default function NuevoReporteScreen({ navigation }) {
         </ScrollView>
     );
 }
-
-const crearEstilos = (colores) => StyleSheet.create({
-    contenedor: { padding: 20, paddingBottom: 48, maxWidth: 720, width: '100%', alignSelf: 'center' },
-    seccion: { fontSize: 18, fontWeight: '800', color: colores.texto, marginTop: 22 },
-    ayuda: { color: colores.textoSuave, fontSize: 13, marginTop: 2, marginBottom: 8 },
-
-    etiqueta: { fontSize: 12, color: colores.textoSuave, marginTop: 14, marginBottom: 6, letterSpacing: 0.5 },
-    filaEtiqueta: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
-    contador: { fontSize: 12, color: colores.textoSuave, marginTop: 14, marginBottom: 6 },
-
-    input: {
-        borderWidth: 1, borderColor: colores.borde, borderRadius: 10, padding: 12,
-        backgroundColor: colores.superficie, fontSize: 16, color: colores.texto,
-        ...Platform.select({ web: { outlineStyle: 'none' } }),
-    },
-    multilinea: { minHeight: 110 },
-
-    chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
-    chip: {
-        paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999,
-        borderWidth: 1, borderColor: colores.borde, backgroundColor: colores.superficie,
-    },
-    chipActivo: { backgroundColor: colores.oscuro, borderColor: colores.oscuro },
-    chipTexto: { color: colores.texto, fontSize: 14 },
-    chipTextoActivo: { color: colores.blanco, fontWeight: '700' },
-
-    botonGPS: {
-        flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-        borderWidth: 1, borderColor: colores.borde, backgroundColor: colores.superficie,
-        borderRadius: 10, padding: 13, marginTop: 10,
-    },
-    botonGPSTexto: { color: colores.texto, fontWeight: '600' },
-    gpsOk: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 },
-    gpsOkTexto: { color: colores.verde, fontSize: 13 },
-
-    error: { backgroundColor: colores.errorFondo, color: colores.error, padding: 10, borderRadius: 8, marginTop: 16 },
-
-    botonEnviar: {
-        flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-        backgroundColor: colores.botonNegro, borderRadius: 12, padding: 16, marginTop: 24,
-    },
-    botonEnviarTexto: { color: colores.blanco, fontWeight: '700', fontSize: 16 },
-});
